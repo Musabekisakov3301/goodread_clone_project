@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Book Detail Page {% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-2">
+            <img class="cover-pic" src="{{ book.cover_picture.url }}" alt="cover_picture">
+        </div>
+
+        <div class="col-6 ms-5">
+            <h1>{{book.title}}</h1>
+            
+            <span class="text-dark bold">
+                Authored by
+                {% for book_author in book.bookauthor_set.all %}
+                   {% if forloop.last %}
+                      {{ book_author.author.full_name }}
+                   {% else %}
+                      {{ book_author.author.full_name }},
+                   {% endif %}
+                {% endfor %}
+            </span> 
+
+            <p>
+                {{book.description}}
+            </p>
+        </div>
+    </div>
+    
+    <hr>
+
+    <div class="row mb-4">
+       <div class="col-6">
+            <form method="POST" action="{% url 'books:reviews' book.id %}">
+                {% csrf_token %}
+                {{ review_form | crispy }}
+                <button class="btn btn-success">Add Review</button>
+            </form>
+       </div>
+    </div>
+    
+    {% if  book.bookreview_set.exists %}
+
+        <h4>Reviews</h4> <hr>
+
+        {% for review in book.bookreview_set.all %}
+            <div class="row media mb-3"> 
+                <div class="col-2 me-2"> 
+                    <img class="mr-3 img-thumbnail rounded-circle" src="{{ review.user.profile_picture.url }}"  alt="...">
+                </div>           
+                <div class="col-7">
+                <h5 class="mt-0">
+                    <b> {{review.user.username}}</b> rated it {{ review.stars_given }} stars <span class="fw-lighter">{{ review.created_at }}</span>
+                    {% if review.user == request.user %}
+                        <a href="{% url 'books:edit-review' book.id review.id %}"><i class="bi bi-pen"></i></a>
+                        <a href="{% url 'books:confirm-delete-review' book.id review.id %}"><i class="bi bi-trash"></i></a>
+                    {% endif %}
+                </h5>
+               
+                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                </div>
+            </div>
+            <!-- <div class="row mb-3">
+                    <div class="col-1 me-10">
+                        <img class="profile-pic" src="{{ review.user.profile_picture.url }}" alt="">
+                    </div>
+                    <div class="col-7">
+                        <b> {{review.user.username}}</b> rated it {{ review.stars_given }} stars
+                        <p class="mt-5 text-wrap">{{review.comment}}</p>
+                    </div>
+                </div>-->
+        {% endfor %}
+    {% endif %}
+{% endblock %}
