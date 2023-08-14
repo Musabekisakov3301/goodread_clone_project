@@ -10,6 +10,9 @@ pillow = "*"
 crispy-bootstrap5 = "*"
 celery = "*"
 djangorestframework = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
+django-environ = "*"
 
 [dev-packages]
 
